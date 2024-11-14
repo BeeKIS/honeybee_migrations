@@ -1,0 +1,46 @@
+##########################################################
+# Configuration file for analysis of beekeeper migrations. 
+##########################################################
+
+#######
+# Utils
+#######
+hopper_url: http://172.16.34.59:8989/route  # Replace with own IP.
+
+###############
+# Preprocessing
+###############
+origins: ../data/raw/stationary_apiaries.xlsx
+migrations_processed: ../data/derived/migrations_processed.xlsx
+
+############
+# Processing
+############
+fuel_calibrations: ../data/derived/migrations_fuel_calibration.xlsx
+survey_results: ../data/raw/migration_survey_results.xlsx
+fuel_prices: ../data/meta/cene_goriv.xlsx
+migrations_travel_costs: ../output/migrations_travel_costs.xlsx
+
+# Used in jupyter notebook
+distances: ../output/KMG_MID_interapiary_distances.csv
+migration_stats: ../output/Migration_Stats.xlsx
+
+#########
+# Figures
+#########
+# Used in model_of_travel_costs.py
+figure_dir: ../figures
+cost_per_hive_per_km_fig: ../figures/Fig_10.pdf
+
+# Used in migrations_fuel_calculations.py
+fuel_consumption_calibration_fig: ../figures/Fig_8.pdf
+
+#####################
+# Migrations_stats.py
+#####################
+colony_moves_by_year: ../figures/Fig_3.pdf
+yearly_migration_dynamics: ../figures/Fig_4.pdf
+colony_packaging: ../figures/Fig_5.pdf
+yearly_distances_traveled_cumulative: ../figures/Fig_6.pdf
+travel_time_fig: ../figures/Fig_7.pdf
+yearly_costs_fig: ../figures/Fig_9.pdf
