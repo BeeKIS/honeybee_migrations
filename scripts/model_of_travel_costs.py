@@ -54,29 +54,99 @@ if __name__ == "__main__":
     fig_cost_per_hive_per_km = plt.figure(figsize=(8, 4))
     a_cost_per_hive_per_km = fig_cost_per_hive_per_km.add_axes((0.15, 0.15, 0.80, 0.75))
 
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 8], x="year", y="cost per hive moved per kilometer",
-                 color="lightblue", ax=a_cost_per_hive_per_km, label="car, migration of 8 hives, no extra toll")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 10], x="year", y="cost per hive moved per kilometer",
-                 color="dodgerblue", ax=a_cost_per_hive_per_km, label="car, migration of 10 hives, no extra toll")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 20], x="year", y="cost per hive moved per kilometer",
-                 color="blue", ax=a_cost_per_hive_per_km, label="car, migration of 20 hives, no extra toll")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 24], x="year", y="cost per hive moved per kilometer",
-                 color="royalblue", ax=a_cost_per_hive_per_km, label="car, migration of 24 hives, no extra toll")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 28], x="year", y="cost per hive moved per kilometer",
-                 color="darkblue", ax=a_cost_per_hive_per_km, label="car, migration of 28 hives, no extra toll")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 40], x="year", y="cost per hive moved per kilometer",
-                 color="orange", ax=a_cost_per_hive_per_km, label="truck, migration of 40 hives, toll Euro 0 - 2")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 60], x="year", y="cost per hive moved per kilometer",
-                 color="gold", ax=a_cost_per_hive_per_km, label="truck, migration of 60 hives, toll Euro 0 - 2")
-    sns.lineplot(data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 72], x="year", y="cost per hive moved per kilometer",
-                 color="yellow", ax=a_cost_per_hive_per_km, label="truck, migration of 72 hives, toll Euro 0 - 2")
-    a_cost_per_hive_per_km.set_xticklabels(["2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"],
-                                    fontsize=15)
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 8],
+        x="year",
+        y="cost per hive moved per kilometer",
+        color="lightblue",
+        ax=a_cost_per_hive_per_km, 
+        label="car, 8 hives", 
+        linestyle="solid"
+    )
 
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 10], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="dodgerblue", 
+        ax=a_cost_per_hive_per_km, 
+        label="car, 10 hives", 
+        linestyle="dotted"
+    )
+    
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 20], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="blue", 
+        ax=a_cost_per_hive_per_km, 
+        label="car, 20 hives", 
+        linestyle="dashed"
+    )
+    
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 24], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="royalblue", 
+        ax=a_cost_per_hive_per_km, 
+        label="car, 24 hives", 
+        linestyle="dashdot"
+    )
+    
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 28], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="darkblue", 
+        ax=a_cost_per_hive_per_km, 
+        label="car, 28 hives", 
+        linestyle="solid"
+    )
+    
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 40], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="orange", 
+        ax=a_cost_per_hive_per_km, 
+        label="truck, 40 hives", 
+        linestyle="dotted"
+    )
+    
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 60], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="gold", 
+        ax=a_cost_per_hive_per_km, 
+        label="truck, 60 hives", 
+        linestyle="dashed"
+    )
+    
+    sns.lineplot(
+        data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 72], 
+        x="year", 
+        y="cost per hive moved per kilometer",
+        color="lime", 
+        ax=a_cost_per_hive_per_km, 
+        label="truck, 72 hives", 
+        linestyle="dashdot"
+    )
+    
+    a_cost_per_hive_per_km.set_xticklabels(
+        ["2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"],
+        fontsize=15
+    )
+    
     a_cost_per_hive_per_km.set_xlabel("Year", fontsize=15)
     a_cost_per_hive_per_km.set_ylabel("Cost of migration [€ / hive / km]", fontsize=15)
     a_cost_per_hive_per_km.tick_params(labelsize=15, axis="both")
-
+    
+    ### fix the legend
+    h, l = a_cost_per_hive_per_km.get_legend_handles_labels()
+    a_cost_per_hive_per_km.legend_.remove()
+    fig_cost_per_hive_per_km.legend(h, l, ncol=2, loc="upper center", bbox_to_anchor=(0.55, 0.9))
 
 
     fig_cost_per_hive_per_km.savefig(f'{CONFIG["cost_per_hive_per_km_fig"]}.pdf')
