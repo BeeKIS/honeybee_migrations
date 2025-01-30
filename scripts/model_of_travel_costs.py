@@ -13,6 +13,7 @@ import uncertainties.unumpy as unp
 from RegscorePy import aic
 from lmfit import Model
 import seaborn as sns
+from PIL import Image  # To convert from RGB to CMYK for publication.
 
 __author__ = "jpresern"
 
@@ -36,12 +37,12 @@ if __name__ == "__main__":
     # Generate travel data.
     travel = np.arange(0, 600, 20)
 
-    # Premise 1: travelling with personal car with 10 hives.
+    # Premise 1: traveling with personal car with 10 hives.
     fuel_10_hives = linear(10, df_consumption.loc[0, "k_linear"], df_consumption.loc[0, "intercept_linear"])
     fuel_10_hives_unc = linear(10, df_consumption.loc[0, "k_unc_lin"], df_consumption.loc[0, "intercept_unc_lin"])
     fuel_10_df = pd.DataFrame({"Distance": travel, "Fuel consumption": travel*fuel_10_hives})
 
-    # Premise 2: travelling with personal car with 20 hives in 2022.
+    # Premise 2: traveling with personal car with 20 hives in 2022.
     fuel_20_hives = linear(20, df_consumption.loc[0, "k_linear"], df_consumption.loc[0, "intercept_linear"])
     fuel_20_hives_unc = linear(20, df_consumption.loc[0, "k_unc_lin"], df_consumption.loc[0, "intercept_unc_lin"])
     cost_20_df = pd.DataFrame({"Distance": travel, "Fuel consumption": travel * fuel_20_hives})
@@ -51,7 +52,9 @@ if __name__ == "__main__":
 
    
     # Cost per hive moved per kilometer traveled.
-    fig_cost_per_hive_per_km = plt.figure(figsize=(8, 4))
+    # Submission figure size limits for two column figures are:
+    # w = 170 mm, h = 240 mm
+    fig_cost_per_hive_per_km = plt.figure(figsize=(170 / 25.4, 85 / 25.4))
     a_cost_per_hive_per_km = fig_cost_per_hive_per_km.add_axes((0.15, 0.15, 0.80, 0.75))
 
     sns.lineplot(
@@ -148,8 +151,18 @@ if __name__ == "__main__":
     a_cost_per_hive_per_km.legend_.remove()
     fig_cost_per_hive_per_km.legend(h, l, ncol=2, loc="upper center", bbox_to_anchor=(0.55, 0.9))
 
-
-    fig_cost_per_hive_per_km.savefig(f'{CONFIG["cost_per_hive_per_km_fig"]}.pdf')
+    # Save figure 
+    fig_cost_per_hive_per_km.savefig(
+        f'{CONFIG["cost_per_hive_per_km_fig"]}.pdf',
+        dpi=300, 
+        format='pdf', 
+        bbox_inches='tight', 
+    )
+    
+    # Convert to CMYK from RGB to conform to submission guidelines.
+    image = Image.open(f'{CONFIG["cost_per_hive_per_km_fig"]}.pdf')
+    cmyk_image = image.convert('CMYK')
+    cmyk_image.save(f'{CONFIG["cost_per_hive_per_km_fig"]}_CMYK.pdf')
 
     # Write stats.
     cost_df = df_migrations.groupby(["FAMILY_MOVE", "year"])["cost per hive moved per kilometer"].describe().reset_index()
