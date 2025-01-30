@@ -25,6 +25,7 @@ import uncertainties.unumpy as unp
 from RegscorePy import aic
 from lmfit import Model
 import seaborn as sns
+from PIL import Image
 
 
 with open("config.yaml") as f:
@@ -106,7 +107,7 @@ def fit_the_data (df, fits):
     fits.loc[0, "aic_exp"] = aic_score_exp
 
     """ draw """
-    f = plt.figure(figsize=(6.5, 5.5))
+    f = plt.figure(figsize=(170/25.4, 143/25.4))
     a = f.add_subplot(111)
 
     a.fill_between(x, nom_l*100 - 2 * std_l*100, nom_l*100 + 2 * std_l*100, color="k", alpha=0.25)
@@ -122,7 +123,13 @@ def fit_the_data (df, fits):
 
     a.text(90, 27, '$R^2$ = '  + str(np.round(r_2_l, 2)), rotation=30, fontsize=15)
     f.savefig(f'{CONFIG['fuel_consumption_calibration_fig']}.pdf')
+    
+    # Convert image to CMYK for publication.
+    image = Image.open(f'{CONFIG['fuel_consumption_calibration_fig']}.pdf')
+    cmyk_image = image.convert('CMYK')
+    cmyk_image.save(f'{CONFIG['fuel_consumption_calibration_fig']}_CMYK.pdf')
 
+    
     writer = pd.ExcelWriter(CONFIG['fuel_calibrations'])
     fits.to_excel(writer, sheet_name="fuel_calibration", index=False)
     writer.close()
