@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-
+#
 # Analysis of colony migrations in Slovenia
 # 
 # author: Janez Prešern, KIS
@@ -16,10 +15,13 @@ import seaborn as sns
 import seaborn.objects as so
 from shapely import Polygon, LineString, Point
 from matplotlib.collections import LineCollection
+from PIL import Image
 
 with open("config.yaml") as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
     
+LABELSIZE = 5  # The default size of the font used in figures.
+
 ###########
 # Load data
 ###########
@@ -53,36 +55,43 @@ df_colony_movements_augmented_yearly = df_migrations_augmented.groupby(["year"])
 
 sns.set_style('white')
 
-f0 = plt.figure(figsize=(8, 8), dpi=200); a00 = f0.add_axes([0.15, 0.55, 0.70, 0.4]); a00_twin = a00.twinx()
+f0 = plt.figure(figsize=(82/25.4, 82/25.4), dpi=300) 
+#a00 = f0.add_axes([0.15, 0.55, 0.70, 0.4])
+a00 = f0.add_axes([0.15, 0.55, 0.60, 0.4])
+a00_twin = a00.twinx()
+
 sns.barplot(df_movements_yearly, x="year", y="n_of_migrations", ax=a00, color = "darkgrey")
 sns.barplot(df_movements_augmented_yearly, x="year", y="n_of_migrations", ax=a00_twin, color="teal")
 
-a00.set_ylabel("Number of migrations per year", fontsize=15, color="grey")
+a00.set_ylabel("Number of migrations per year", fontsize=LABELSIZE, color="grey")
 a00.set_xlabel("")
-a00.tick_params(axis='y', labelcolor="darkgrey", labelsize=15)
-a00_twin.set_ylim(a00.get_ylim())
-a00_twin.set_ylabel("Number of migrations\nmore than 8 colonies and more than 5 km", color="teal")
-a00_twin.tick_params(axis='y', labelcolor="teal", labelsize=15)
-a00.tick_params(axis='both', which='major', labelsize=15)
-a00_twin.tick_params(axis='both', which='major', labelsize=15)
+a00.tick_params(axis='y', labelcolor="darkgrey", labelsize=LABELSIZE)
 
-a01 = f0.add_axes([0.15, 0.08, 0.70, 0.4]); a01_twin = a01.twinx()
+a00_twin.set_ylim(a00.get_ylim())
+a00_twin.set_ylabel("Number of migrations\nmore than 8 colonies and more than 5 km", color="teal", fontsize=LABELSIZE)
+a00_twin.tick_params(axis='y', labelcolor="teal", labelsize=LABELSIZE)
+a00.tick_params(axis='both', which='major', labelsize=LABELSIZE)
+a00_twin.tick_params(axis='both', which='major', labelsize=LABELSIZE)
+
+#a01 = f0.add_axes([0.15, 0.08, 0.70, 0.4]); a01_twin = a01.twinx()
+a01 = f0.add_axes([0.15, 0.09, 0.60, 0.4]); a01_twin = a01.twinx()
 sns.barplot(df_colony_movements_yearly, x="year", y="n_of_colony_migrations", ax=a01, color="darkgrey")
 sns.barplot(df_colony_movements_augmented_yearly, x="year", y="n_of_colony_migrations", ax=a01_twin, color="teal")
 
-a01.set_ylabel("Number of migrated colonies", fontsize=15, color="grey")
-a01.set_xlabel("Year", fontsize=15)
+a01.set_ylabel("Number of migrated colonies", fontsize=LABELSIZE, color="grey")
+a01.set_xlabel("Year", fontsize=LABELSIZE)
 a01.tick_params(axis='y', labelcolor="darkgrey")
-a01_twin.set_ylim(a01.get_ylim())
-a01_twin.set_ylabel("Number of migrated colonies\nmore than 8 colonies and more than 5 km", color="teal")
-a01_twin.tick_params(axis='y', labelcolor="teal", labelsize=15)
 
-a01.tick_params(axis='both', which='major', labelsize=15)
-a01_twin.tick_params(axis='both', which='major', labelsize=15)
+a01_twin.set_ylim(a01.get_ylim())
+a01_twin.set_ylabel("Number of migrated colonies\nmore than 8 colonies and more than 5 km", color="teal", fontsize=LABELSIZE)
+a01_twin.tick_params(axis='y', labelcolor="teal", labelsize=LABELSIZE)
+
+a01.tick_params(axis='both', which='major', labelsize=LABELSIZE)
+a01_twin.tick_params(axis='both', which='major', labelsize=LABELSIZE)
 
 sns.set_style('white')
 
-f0.savefig(f'{CONFIG["colony_moves_by_year"]}')
+f0.savefig(f'{CONFIG["colony_moves_by_year"]}.pdf')
 
 # Construct df for storing stats.
 all_stats_migrations_yearly = df_movements_yearly
@@ -117,7 +126,6 @@ dfdf = df_origin.melt(
     id_vars=[
         "KMG_MID",
         "GMID",
-
     ], 
     value_vars=[
         2011, 2012, 2013,
@@ -144,11 +152,21 @@ KMG_MID_migrated_augmented_small = df_migrations_augmented.loc[df_migrations_aug
 #################################
 # Draw colony migrations per week
 #################################
+
 # First, we draw for all years, then we do it year by year.
-df_dest0 = df_migrations_augmented.groupby(by=["week"])["FAMILY_MOVE"].sum().to_frame(name="n_of_migrations")
-f1 = plt.figure(figsize=(8, 4), dpi=200); a10 = f1.add_axes([0.15, 0.15, 0.8, 0.75])
-sns.lineplot(df_dest0, x="week", y="n_of_migrations", markers="o")
-a10.set_title("Število premaknjenih družin po tednih - vsota 2014 - 2022")
+df_dest0 = (
+    df_migrations_augmented
+    .groupby(by=["week"])["FAMILY_MOVE"]
+    .sum()
+    .to_frame(name="n_of_migrations")
+)
+
+### This commendted out section probably needs to be removed.
+#f1 = plt.figure(figsize=(82/25.4, 41/25.4), dpi=300); a10 = f1.add_axes([0.15, 0.15, 0.8, 0.75])
+#
+#sns.lineplot(df_dest0, x="week", y="n_of_migrations", markers="o")
+#a10.set_title("Število premaknjenih družin po tednih - vsota 2014 - 2022")
+### 
 
 all_stats_weekly_migrations = df_dest0
 
@@ -160,18 +178,33 @@ all_stats_weekly_migration_yearly = df_dest
 
 df_dest_augmented = df_migrations_augmented.groupby(by=["year", "week"])["FAMILY_MOVE"].sum()
 df_dest_augmented = df_dest_augmented.to_frame().reset_index()
-grid2 = sns.FacetGrid(df_dest_augmented, col="year", hue="year", palette="tab20c",
-                 col_wrap=3, height=1.5, despine=False)
+
+# Figure 4
+grid2 = sns.FacetGrid(
+    df_dest_augmented,
+    col="year",
+    hue="year",
+    palette="tab20c",
+    col_wrap=3,
+    height=1.5,
+    despine=False
+)
+    
 grid2.fig.subplots_adjust(wspace=0, hspace=0)
-grid2.fig.set_size_inches(15.5, 15.5)
-grid2.map(plt.plot, "week", "FAMILY_MOVE", marker="o")
-grid2.set_ylabels("Colonies migrated", size=14)
-grid2.set_xlabels("Week", size=15)
-grid2.set_titles(size=15)
-grid2.tick_params(axis='both', which='major',labelsize=15)
+grid2.fig.set_size_inches(82/25.4, 82/25.4)
 
-grid2.fig.savefig(f'{CONFIG["yearly_migration_dynamics"]}')
+grid2.map(plt.plot, "week", "FAMILY_MOVE", marker="o", ms=0.3, linewidth=0.5)  # Added ms
+grid2.set_ylabels("Colonies migrated", size=LABELSIZE)
+grid2.set_xlabels("Week", size=LABELSIZE)
+grid2.set_titles(size=LABELSIZE)
+grid2.tick_params(axis='both', which='major',labelsize=LABELSIZE)
 
+grid2.fig.savefig(
+    f'{CONFIG["yearly_migration_dynamics"]}.pdf',
+    dpi=300
+)
+
+# Figure 5
 all_stats_weekly_migration_yearly = df_dest
 all_stats_weekly_migration_yearly_augmented = df_dest_augmented
 
@@ -190,20 +223,25 @@ df_n_of_colonies_in_package_augmented = pd.cut(
     bins=np.arange(0, 221, 1)
 ).value_counts().to_frame(name="Number of colonies migrated").reset_index()
 
-f2_1 = plt.figure(figsize=(8, 4), dpi=200); a20_1 = f2_1.add_axes([0.15, 0.15, 0.8, 0.75])
+f2_1 = plt.figure(
+    figsize=(82/25.4, 41/25.4),
+    dpi=300
+)
 
+#a20_1 = f2_1.add_axes([0.15, 0.15, 0.8, 0.75])
+a20_1 = f2_1.add_axes([0.15, 0.20, 0.8, 0.70])
 
 sns.histplot(data=df_migrations_augmented["FAMILY_MOVE"], bins=np.arange(0, 221, 1), ax=a20_1, color="teal")
 
-a20_1.set_ylabel("No. of migrations", fontsize=15)
-a20_1.set_xlabel("No. of colonies packed in single migration", fontsize=15)
-a20_1.set_title("Colony packaging by migration", fontsize=15)
+a20_1.set_ylabel("No. of migrations", fontsize=LABELSIZE)
+a20_1.set_xlabel("No. of colonies packed in single migration", fontsize=LABELSIZE)
+a20_1.set_title("Colony packaging by migration", fontsize=LABELSIZE)
 a20_1.set_xlim(0, 100)
 
-a20_1.tick_params(axis='both', labelsize=15)
+a20_1.tick_params(axis='both', labelsize=LABELSIZE)
 sns.set_style('white')
 
-f2_1.savefig(f'{CONFIG["colony_packaging"]}')
+f2_1.savefig(f'{CONFIG["colony_packaging"]}.pdf')
 
 # Load data about migrations survey.
 survey_fn = CONFIG['survey_results']
@@ -224,24 +262,30 @@ df_movements_yearly_small = df_migrations_augmented.loc[
 
 df_movements_per_beekeeper = df_migrations_augmented["travel_distances"].describe().reset_index()
 
+# Figure 6
 sns.set_style("white")
-f6 = plt.figure(figsize=(8, 4), dpi=200); a60 = f6.add_axes([0.15, 0.15, 0.68, 0.75]); a60_twin = a60.twinx()
+
+f6 = plt.figure(figsize=(82/25.4, 41/25.4), dpi=300)
+#a60 = f6.add_axes([0.15, 0.15, 0.68, 0.75])
+a60 = f6.add_axes([0.15, 0.20, 0.68, 0.75])
+a60_twin = a60.twinx()
 
 sns.barplot(df_movements_yearly, x="year", y="razdalja [km]", color="teal", ax=a60)
 sns.barplot(df_movements_yearly_small, x="year", y="razdalja [km]", color="black", ax=a60_twin)
 
-a60.set_ylabel("Cumulative travel distance [km]", fontsize=15, color="teal")
-a60_twin.set_ylabel("Cumulative travel distance\n by small beekeepers [km]", fontsize=15)
-a60.set_xlabel("Year", fontsize=15)
+a60.set_ylabel("Cumulative travel distance [km]", fontsize=LABELSIZE, color="teal")
+a60_twin.set_ylabel("Cumulative travel distance\n by small beekeepers [km]", fontsize=LABELSIZE)
+a60.set_xlabel("Year", fontsize=LABELSIZE)
 
-a60.tick_params(axis='both', which='major', labelsize=15)
+a60.tick_params(axis='both', which='major', labelsize=LABELSIZE)
 a60.tick_params(axis='y', color="teal", labelcolor="teal")
-a60_twin.tick_params(axis='both', which='major', labelsize=15)
+a60_twin.tick_params(axis='both', which='major', labelsize=LABELSIZE)
 a60_twin.set_ylim(a60.get_ylim())
 
 sns.set_style('white')
 
-f6.savefig(f'{CONFIG["yearly_distances_traveled_cumulative"]}')
+f6.savefig(f'{CONFIG["yearly_distances_traveled_cumulative"]}.pdf')
+
 
 all_stats_migration_distances_yearly = df_movements_yearly
 all_stats_migration_distances_yearly_small = df_movements_yearly_small
@@ -250,7 +294,6 @@ all_stats_migrations_distances_per_beekeper = df_movements_per_beekeeper
 ############################################
 # Obtain general beekeeping and apiary stats
 ############################################
-
 
 # Calculate fuel consumption and toll expenditures in a given year.
 df_fuel = df_migrations_augmented.groupby('year')["fuel paid"].sum().reset_index()
@@ -269,32 +312,69 @@ df_cost_total = pd.DataFrame(
     }
 )
 
+# Figure 9
 # Plot yearly costs of fuel and toll.
-f_fuel = plt.figure(figsize=(8, 4), dpi=200)
-a_fuel = f_fuel.add_axes((0.15, 0.15, 0.80, 0.75))
+f_fuel = plt.figure(figsize=(82/25.4, 41/25.4), dpi=300)
+a_fuel = f_fuel.add_axes((0.15, 0.20, 0.80, 0.70))
 sns.set_style('white')
 sns.barplot(data=df_cost_total, x="year", y="total cost Euro 0 - 2", color="darkgrey", ax=a_fuel, label="toll Euro 0 - 2")
 sns.barplot(data=df_cost_total, x="year", y="total cost Euro 6, EEV", color="lightgrey", ax=a_fuel, label="toll Euro 6, EEV")
 sns.barplot(data=df_fuel, x="year", y="fuel paid", ax=a_fuel, color="teal", label="fuel")
-a_fuel.set_ylabel('Yearly costs of hive transport in €', fontsize=15)
-a_fuel.set_xlabel('Year', fontsize=15)
-a_fuel.tick_params(axis='both', which='major', labelsize=15)
-a_fuel.legend()
-sns.set_style('white')
-f_fuel.savefig(f'{CONFIG["yearly_costs_fig"]}')
+a_fuel.set_ylabel('Yearly costs of hive transport in €', fontsize=LABELSIZE)
+a_fuel.set_xlabel('Year', fontsize=LABELSIZE)
+a_fuel.tick_params(axis='both', which='major', labelsize=LABELSIZE)
 
+a_fuel.legend(
+    fontsize=LABELSIZE,
+    ncol=3,
+    bbox_to_anchor=(0.5, 1.075),
+    loc='center'
+)
+
+sns.set_style('white')
+f_fuel.savefig(f'{CONFIG["yearly_costs_fig"]}.pdf')
+
+
+# Figure 7
 # Plot travel times.
-df_traveled_distances = pd.cut(df_migrations_augmented["travel_distances"], bins=np.arange(0, 300, 5)).value_counts().to_frame(name="Kilometers traveled").reset_index()
-df_traveled_motorway = pd.cut(df_migrations_augmented["motorway"], bins=np.arange(0, 300, 5)).value_counts().to_frame(name="Kilometers on motorway").reset_index() 
-df_traveled_distances = pd.cut(df_migrations_augmented["travel_time"], bins=np.arange(0, 300, 5)).value_counts().to_frame(name="Kilometers traveled").reset_index()
-f_traveled_distances = plt.figure(figsize=(8, 4.2), dpi=200)
-a_traveled_distances = f_traveled_distances.add_axes((0.15, 0.15, 0.80, 0.75))
+df_traveled_distances = (
+    pd.cut(
+        df_migrations_augmented["travel_distances"], 
+        bins=np.arange(0, 300, 5))
+    .value_counts()
+    .to_frame(name="Kilometers traveled")
+    .reset_index()
+)
+
+df_traveled_motorway = (
+    pd.cut(
+        df_migrations_augmented["motorway"], 
+        bins=np.arange(0, 300, 5))
+    .value_counts()
+    .to_frame(name="Kilometers on motorway")
+    .reset_index()
+)
+
+df_traveled_distances = (
+    pd.cut(
+        df_migrations_augmented["travel_time"], 
+        bins=np.arange(0, 300, 5))
+    .value_counts()
+    .to_frame(name="Kilometers traveled")
+    .reset_index()
+)
+
+f_traveled_distances = plt.figure(figsize=(82/25.4, 43/25.4), dpi=300)
+#a_traveled_distances = f_traveled_distances.add_axes((0.15, 0.15, 0.80, 0.75))
+a_traveled_distances = f_traveled_distances.add_axes((0.15, 0.20, 0.80, 0.70))
+
 sns.set_style('white')
 sns.histplot(data=df_migrations_augmented["travel_time"], bins=np.arange(0, 300, 5), ax=a_traveled_distances, color="teal")
-a_traveled_distances.set_xlabel("Travel times within single migration [minutes]", fontsize=15)
-a_traveled_distances.set_ylabel("Count", fontsize=15)
-a_traveled_distances.tick_params(axis='both', labelsize=15)
-f_traveled_distances.savefig(f'{CONFIG["travel_time_fig"]}')
+a_traveled_distances.set_xlabel("Travel times within single migration [minutes]", fontsize=LABELSIZE)
+a_traveled_distances.set_ylabel("Count", fontsize=LABELSIZE)
+a_traveled_distances.tick_params(axis='both', labelsize=LABELSIZE)
+f_traveled_distances.savefig(f'{CONFIG["travel_time_fig"]}.pdf')
+
 
 ############
 # Save stats
@@ -333,4 +413,3 @@ all_stats_migrations_distances_per_beekeper.to_excel(writer, sheet_name="Travel 
 df_cost_total.to_excel(writer, sheet_name="Costs of transport, fuel, toll")
 
 writer.close()
-
