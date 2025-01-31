@@ -13,7 +13,8 @@ import uncertainties.unumpy as unp
 from RegscorePy import aic
 from lmfit import Model
 import seaborn as sns
-from PIL import Image  # To convert from RGB to CMYK for publication.
+
+LABELSIZE = 7.5  # Default fontsize for images.
 
 __author__ = "jpresern"
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         
     df_migrations["year"] = df_migrations["year"].astype(str)
 
-   
+    # Figure 10
     # Cost per hive moved per kilometer traveled.
     # Submission figure size limits for two column figures are:
     # w = 170 mm, h = 240 mm
@@ -139,17 +140,24 @@ if __name__ == "__main__":
     
     a_cost_per_hive_per_km.set_xticklabels(
         ["2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"],
-        fontsize=15
+        fontsize=LABELSIZE
     )
     
-    a_cost_per_hive_per_km.set_xlabel("Year", fontsize=15)
-    a_cost_per_hive_per_km.set_ylabel("Cost of migration [€ / hive / km]", fontsize=15)
-    a_cost_per_hive_per_km.tick_params(labelsize=15, axis="both")
+    a_cost_per_hive_per_km.set_xlabel("Year", fontsize=LABELSIZE)
+    a_cost_per_hive_per_km.set_ylabel("Cost of migration [€ / hive / km]", fontsize=LABELSIZE)
+    a_cost_per_hive_per_km.tick_params(labelsize=LABELSIZE, axis="both")
     
     ### fix the legend
     h, l = a_cost_per_hive_per_km.get_legend_handles_labels()
     a_cost_per_hive_per_km.legend_.remove()
-    fig_cost_per_hive_per_km.legend(h, l, ncol=2, loc="upper center", bbox_to_anchor=(0.55, 0.9))
+    fig_cost_per_hive_per_km.legend(
+        h, 
+        l, 
+        ncol=2, 
+        loc="upper center", 
+        bbox_to_anchor=(0.55, 0.9),
+        fontsize=LABELSIZE
+    )
 
     # Save figure 
     fig_cost_per_hive_per_km.savefig(
@@ -159,11 +167,6 @@ if __name__ == "__main__":
         bbox_inches='tight', 
     )
     
-    # Convert to CMYK from RGB to conform to submission guidelines.
-    image = Image.open(f'{CONFIG["cost_per_hive_per_km_fig"]}.pdf')
-    cmyk_image = image.convert('CMYK')
-    cmyk_image.save(f'{CONFIG["cost_per_hive_per_km_fig"]}_CMYK.pdf')
-
     # Write stats.
     cost_df = df_migrations.groupby(["FAMILY_MOVE", "year"])["cost per hive moved per kilometer"].describe().reset_index()
     writer = pd.ExcelWriter(CONFIG["migrations_travel_costs"], engine='openpyxl')
