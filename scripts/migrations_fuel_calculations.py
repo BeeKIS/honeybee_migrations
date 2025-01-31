@@ -27,6 +27,7 @@ from lmfit import Model
 import seaborn as sns
 from PIL import Image
 
+LABELSIZE = 15 # Default fontsize for figures.
 
 with open("config.yaml") as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
@@ -107,6 +108,7 @@ def fit_the_data (df, fits):
     fits.loc[0, "aic_exp"] = aic_score_exp
 
     """ draw """
+    # Figure 8
     f = plt.figure(figsize=(170/25.4, 143/25.4))
     a = f.add_subplot(111)
 
@@ -116,18 +118,13 @@ def fit_the_data (df, fits):
     a.set_ylim(0, 35)
 
     """ cosmetics """
-    a.tick_params(axis='both', which='major', labelsize=15)
-    a.set_xlabel("No of colonies", fontsize=15)
-    a.set_ylabel("Fuel consumption [L/100 km]", fontsize=15)
-    a.legend(fontsize=15)
+    a.tick_params(axis='both', which='major', labelsize=LABELSIZE)
+    a.set_xlabel("No of colonies", fontsize=LABELSIZE)
+    a.set_ylabel("Fuel consumption [L/100 km]", fontsize=LABELSIZE)
+    a.legend(fontsize=LABELSIZE)
 
-    a.text(90, 27, '$R^2$ = '  + str(np.round(r_2_l, 2)), rotation=30, fontsize=15)
+    a.text(90, 27, '$R^2$ = '  + str(np.round(r_2_l, 2)), rotation=30, fontsize=LABELSIZE)
     f.savefig(f'{CONFIG['fuel_consumption_calibration_fig']}.pdf')
-    
-    # Convert image to CMYK for publication.
-    image = Image.open(f'{CONFIG['fuel_consumption_calibration_fig']}.pdf')
-    cmyk_image = image.convert('CMYK')
-    cmyk_image.save(f'{CONFIG['fuel_consumption_calibration_fig']}_CMYK.pdf')
 
     
     writer = pd.ExcelWriter(CONFIG['fuel_calibrations'])
