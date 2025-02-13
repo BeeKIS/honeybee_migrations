@@ -114,7 +114,13 @@ def fit_the_data (df, fits):
 
     a.fill_between(x, nom_l*100 - 2 * std_l*100, nom_l*100 + 2 * std_l*100, color="k", alpha=0.25)
     a.plot(x, y_l*100, color="k", linestyle="--", linewidth=3)
-    sns.scatterplot(df, x="no of colonies", y="fuel consumption", hue="towing vehicle")
+    sns.scatterplot(
+        df, 
+        x="no of colonies",
+        color='black',
+        y="fuel consumption",
+        style='towing vehicle'
+    )
     a.set_ylim(0, 35)
 
     """ cosmetics """
