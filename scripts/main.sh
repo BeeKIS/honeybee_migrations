@@ -11,20 +11,20 @@
 # Conda activate is not recommended for non-interactive sessions. 
 # Consider using "conda run" instead.
 
-# eval "$(conda shell.bash hook)"
-# conda activate migrations
+eval "$(conda shell.bash hook)"
+conda activate migrations
 
-# python preprocessing_1.py &&
-# echo "preprocessing_1 done" &&
-#  
-# python preprocessing_2.py &&
-# echo "preprocessing_2 done" &&
-# 
-# python model_of_travel_costs.py &&
-# echo "model_of_travel_costs done" &&
-# 
-# python migrations_fuel_calculations.py &&
-# echo "fuel_calculations done" &&
+python preprocessing_1.py &&
+echo "preprocessing_1 done"
+  
+python preprocessing_2.py &&
+echo "preprocessing_2 done"
+
+python model_of_travel_costs.py &&
+echo "model_of_travel_costs done"
+ 
+python migrations_fuel_calculations.py &&
+echo "fuel_calculations done"
 
 python3.9 "migrations_stats.py" &&
 echo "migrations_stats done"
