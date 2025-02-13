@@ -14,7 +14,7 @@ from RegscorePy import aic
 from lmfit import Model
 import seaborn as sns
 
-LABELSIZE = 7.5  # Default fontsize for images.
+LABELSIZE = 12  # Default fontsize for images.
 
 __author__ = "jpresern"
 
@@ -58,84 +58,94 @@ if __name__ == "__main__":
     fig_cost_per_hive_per_km = plt.figure(figsize=(170 / 25.4, 85 / 25.4))
     a_cost_per_hive_per_km = fig_cost_per_hive_per_km.add_axes((0.15, 0.15, 0.80, 0.75))
 
+# Line plots with unique markers
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 8],
         x="year",
         y="cost per hive moved per kilometer",
-        color="lightblue",
+        color="grey",
         ax=a_cost_per_hive_per_km, 
         label="car, 8 hives", 
-        linestyle="solid"
+        linestyle="solid",
+        marker="o"  # Circle marker
     )
 
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 10], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="dodgerblue", 
+        color="grey", 
         ax=a_cost_per_hive_per_km, 
         label="car, 10 hives", 
-        linestyle="dotted"
+        linestyle="dotted",
+        marker="s"  # Square marker
     )
-    
+
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 20], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="blue", 
+        color="grey", 
         ax=a_cost_per_hive_per_km, 
         label="car, 20 hives", 
-        linestyle="dashed"
+        linestyle="dashed",
+        marker="D"  # Diamond marker
     )
-    
+
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 24], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="royalblue", 
+        color="grey", 
         ax=a_cost_per_hive_per_km, 
         label="car, 24 hives", 
-        linestyle="dashdot"
+        linestyle="dashdot",
+        marker="^"  # Upward triangle marker
     )
-    
+
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 28], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="darkblue", 
+        color="grey", 
         ax=a_cost_per_hive_per_km, 
         label="car, 28 hives", 
-        linestyle="solid"
+        linestyle="solid",
+        marker="v"  # Downward triangle marker
     )
-    
+
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 40], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="orange", 
+        color="black", 
         ax=a_cost_per_hive_per_km, 
         label="truck, 40 hives", 
-        linestyle="dotted"
+        linestyle="dotted",
+        marker="*",
+        markersize=10
     )
-    
+
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 60], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="gold", 
+        color="black", 
         ax=a_cost_per_hive_per_km, 
         label="truck, 60 hives", 
-        linestyle="dashed"
+        linestyle="dashed",
+        marker="P"  # Plus marker
     )
-    
+
     sns.lineplot(
         data=df_migrations.loc[df_migrations["FAMILY_MOVE"] == 72], 
         x="year", 
         y="cost per hive moved per kilometer",
-        color="lime", 
+        color="black", 
         ax=a_cost_per_hive_per_km, 
         label="truck, 72 hives", 
-        linestyle="dashdot"
+        linestyle="dashdot",
+        marker="X"  # X marker
     )
     
     a_cost_per_hive_per_km.set_xticklabels(
@@ -153,18 +163,18 @@ if __name__ == "__main__":
     fig_cost_per_hive_per_km.legend(
         h, 
         l, 
-        ncol=2, 
+        ncol=3, 
         loc="upper center", 
         bbox_to_anchor=(0.55, 0.9),
-        fontsize=LABELSIZE
+        fontsize=LABELSIZE - 4
     )
 
     # Save figure 
     fig_cost_per_hive_per_km.savefig(
         f'{CONFIG["cost_per_hive_per_km_fig"]}.pdf',
-        dpi=300, 
+        dpi=600, 
         format='pdf', 
-        bbox_inches='tight', 
+        #bbox_inches='tight', 
     )
     
     # Write stats.
