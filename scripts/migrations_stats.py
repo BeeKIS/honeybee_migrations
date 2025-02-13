@@ -20,7 +20,7 @@ from PIL import Image
 with open("config.yaml") as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
     
-LABELSIZE = 5  # The default size of the font used in figures.
+LABELSIZE = 12  # The default size of the font used in figures.
 
 ###########
 # Load data
@@ -55,7 +55,7 @@ df_colony_movements_augmented_yearly = df_migrations_augmented.groupby(["year"])
 
 sns.set_style('white')
 
-f0 = plt.figure(figsize=(82/25.4, 82/25.4), dpi=300) 
+f0 = plt.figure(figsize=(170/25.4, 170/25.4), dpi=600) 
 #a00 = f0.add_axes([0.15, 0.55, 0.70, 0.4])
 a00 = f0.add_axes([0.15, 0.55, 0.60, 0.4])
 a00_twin = a00.twinx()
@@ -161,12 +161,6 @@ df_dest0 = (
     .to_frame(name="n_of_migrations")
 )
 
-### This commendted out section probably needs to be removed.
-#f1 = plt.figure(figsize=(82/25.4, 41/25.4), dpi=300); a10 = f1.add_axes([0.15, 0.15, 0.8, 0.75])
-#
-#sns.lineplot(df_dest0, x="week", y="n_of_migrations", markers="o")
-#a10.set_title("Število premaknjenih družin po tednih - vsota 2014 - 2022")
-### 
 
 all_stats_weekly_migrations = df_dest0
 
@@ -191,9 +185,9 @@ grid2 = sns.FacetGrid(
 )
     
 grid2.fig.subplots_adjust(wspace=0, hspace=0)
-grid2.fig.set_size_inches(82/25.4, 82/25.4)
+grid2.fig.set_size_inches(170/25.4, 170/25.4)
 
-grid2.map(plt.plot, "week", "FAMILY_MOVE", marker="o", ms=0.3, linewidth=0.5)  # Added ms
+grid2.map(plt.plot, "week", "FAMILY_MOVE", marker="o", ms=2, linewidth=1, color='black')  # Added ms
 grid2.set_ylabels("Colonies migrated", size=LABELSIZE)
 grid2.set_xlabels("Week", size=LABELSIZE)
 grid2.set_titles(size=LABELSIZE)
@@ -201,7 +195,7 @@ grid2.tick_params(axis='both', which='major',labelsize=LABELSIZE)
 
 grid2.fig.savefig(
     f'{CONFIG["yearly_migration_dynamics"]}.pdf',
-    dpi=300
+    dpi=600
 )
 
 # Figure 5
@@ -224,7 +218,7 @@ df_n_of_colonies_in_package_augmented = pd.cut(
 ).value_counts().to_frame(name="Number of colonies migrated").reset_index()
 
 f2_1 = plt.figure(
-    figsize=(82/25.4, 41/25.4),
+    figsize=(170/25.4, 65/25.4),
     dpi=300
 )
 
@@ -265,7 +259,7 @@ df_movements_per_beekeeper = df_migrations_augmented["travel_distances"].describ
 # Figure 6
 sns.set_style("white")
 
-f6 = plt.figure(figsize=(82/25.4, 41/25.4), dpi=300)
+f6 = plt.figure(figsize=(170/25.4, 85/25.4), dpi=600)
 #a60 = f6.add_axes([0.15, 0.15, 0.68, 0.75])
 a60 = f6.add_axes([0.15, 0.20, 0.68, 0.75])
 a60_twin = a60.twinx()
@@ -314,7 +308,7 @@ df_cost_total = pd.DataFrame(
 
 # Figure 9
 # Plot yearly costs of fuel and toll.
-f_fuel = plt.figure(figsize=(82/25.4, 41/25.4), dpi=300)
+f_fuel = plt.figure(figsize=(170/25.4, 85/25.4), dpi=600)
 a_fuel = f_fuel.add_axes((0.15, 0.20, 0.80, 0.70))
 sns.set_style('white')
 sns.barplot(data=df_cost_total, x="year", y="total cost Euro 0 - 2", color="darkgrey", ax=a_fuel, label="toll Euro 0 - 2")
@@ -364,7 +358,7 @@ df_traveled_distances = (
     .reset_index()
 )
 
-f_traveled_distances = plt.figure(figsize=(82/25.4, 43/25.4), dpi=300)
+f_traveled_distances = plt.figure(figsize=(170/25.4, 89/25.4), dpi=600)
 #a_traveled_distances = f_traveled_distances.add_axes((0.15, 0.15, 0.80, 0.75))
 a_traveled_distances = f_traveled_distances.add_axes((0.15, 0.20, 0.80, 0.70))
 
@@ -372,7 +366,7 @@ sns.set_style('white')
 sns.histplot(data=df_migrations_augmented["travel_time"], bins=np.arange(0, 300, 5), ax=a_traveled_distances, color="teal")
 a_traveled_distances.set_xlabel("Travel times within single migration [minutes]", fontsize=LABELSIZE)
 a_traveled_distances.set_ylabel("Count", fontsize=LABELSIZE)
-a_traveled_distances.tick_params(axis='both', labelsize=LABELSIZE)
+#a_traveled_distances.tick_params(axis='both', labelsize=LABELSIZE)
 f_traveled_distances.savefig(f'{CONFIG["travel_time_fig"]}.pdf')
 
 
@@ -413,3 +407,4 @@ all_stats_migrations_distances_per_beekeper.to_excel(writer, sheet_name="Travel 
 df_cost_total.to_excel(writer, sheet_name="Costs of transport, fuel, toll")
 
 writer.close()
+
